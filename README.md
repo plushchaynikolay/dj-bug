@@ -2,7 +2,7 @@
 
 Unexpected behavior of django database `update_or_create` and `get_or_create`.
 
-## Preambula
+## Preamble
 
 We wanted to use `update_or_create` with several models, that had different structure.
 
