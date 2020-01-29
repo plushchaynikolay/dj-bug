@@ -7,27 +7,24 @@ from ..models import MyModel, MyModelWithConstraint
 class TestModel(TestCase):
     def setUp(self):
         MyModel.objects.create(
-            source='test_0',
-            source_message_id='existed',
-            text='some body',
+            constraint_field1='test_0',
+            constraint_field2='existed',
+            field3='some body',
         )
 
     def test_update_or_create_creates_two(self):
         orm_model = MyModel(
-            source='test_0',
-            source_message_id='existed',
-            text='once told me',
+            constraint_field1='test_0',
+            constraint_field2='existed',
+            field3='once told me',
         )
         print(model_to_dict(orm_model))
         print()
         self.assertEqual(MyModel.objects.count(), 1)
         obj, created = MyModel.objects.update_or_create(
-            source=orm_model.source,
-            source_message_id=orm_model.source_message_id,
-            defaults={
-                **model_to_dict(orm_model,
-                exclude=['id'])
-            }
+            constraint_field1=orm_model.constraint_field1,
+            constraint_field2=orm_model.constraint_field2,
+            defaults={**model_to_dict(orm_model)}
         )
         print(model_to_dict(obj))
         print()
@@ -43,56 +40,56 @@ class TestModel(TestCase):
 class TestModelWithConstraint(TestCase):
     def setUp(self):
         MyModelWithConstraint.objects.create(
-            source='test_0',
-            source_message_id='existed',
-            text='some body',
+            constraint_field1='test_0',
+            constraint_field2='existed',
+            field3='some body',
         )
 
     def test_update_or_create_works(self):
         orm_model = MyModelWithConstraint(
-            source='test_0',
-            source_message_id='existed',
-            text='once told me',
+            constraint_field1='test_0',
+            constraint_field2='existed',
+            field3='once told me',
         )
-        print(model_to_dict(orm_model, exclude=['id', 'source', 'source_message_id']))
+        print(model_to_dict(orm_model, exclude=['id', 'constraint_field1', 'constraint_field2']))
         print()
         obj, created = MyModelWithConstraint.objects.update_or_create(
-            source=orm_model.source,
-            source_message_id=orm_model.source_message_id,
+            constraint_field1=orm_model.constraint_field1,
+            constraint_field2=orm_model.constraint_field2,
             defaults={
                 **model_to_dict(orm_model,
-                exclude=['id', 'source', 'source_message_id'])
+                exclude=['id', 'constraint_field1', 'constraint_field2'])
             }
         )
         self.assertFalse(created)
         self.assertTrue(MyModelWithConstraint.objects.filter(
-                source=orm_model.source,
-                source_message_id=orm_model.source_message_id,
-                text=orm_model.text,
+                constraint_field1=orm_model.constraint_field1,
+                constraint_field2=orm_model.constraint_field2,
+                field3=orm_model.field3,
         ).exists())
         self.assertEqual(MyModelWithConstraint.objects.count(), 1)
 
 
     def test_update_or_create_fails(self):
         orm_model = MyModelWithConstraint(
-            source='test_0',
-            source_message_id='existed',
-            text='once told me',
+            constraint_field1='test_0',
+            constraint_field2='existed',
+            field3='once told me',
         )
         print(model_to_dict(orm_model))
         print()
-        # BUG: django.db.utils.IntegrityError: UNIQUE constraint failed: bokunopico.source, bokunopico.source_message_id
+        # BUG: django.db.utils.IntegrityError: UNIQUE constraint failed: bokunopico.constraint_field1, bokunopico.constraint_field2
         obj, created = MyModelWithConstraint.objects.update_or_create(
-            source=orm_model.source,
-            source_message_id=orm_model.source_message_id,
+            constraint_field1=orm_model.constraint_field1,
+            constraint_field2=orm_model.constraint_field2,
             defaults={
                 **model_to_dict(orm_model)
             }
         )
         self.assertFalse(created)
         self.assertTrue(MyModelWithConstraint.objects.filter(
-                source=orm_model.source,
-                source_message_id=orm_model.source_message_id,
-                text=orm_model.text,
+                constraint_field1=orm_model.constraint_field1,
+                constraint_field2=orm_model.constraint_field2,
+                field3=orm_model.field3,
         ).exists())
         self.assertEqual(MyModelWithConstraint.objects.count(), 1)
