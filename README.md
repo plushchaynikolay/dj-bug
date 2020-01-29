@@ -19,7 +19,7 @@ class MyModelWithConstraint(models.Model):
     id = models.AutoField(primary_key=True)
     constraint_field1 = models.CharField(max_length=50, null=False)
     constraint_field2 = models.CharField(max_length=50, null=False)
-    text = models.TextField(null=True)
+    field3 = models.TextField(null=True)
     ...
 ```
 
@@ -27,7 +27,7 @@ Our function lookes like:
 
 ```python
 def use_update_or_create(modelclass, some_object):
-    orm_object = modeltype.from_someobject(some_object)
+    orm_object = modelclass.from_someobject(some_object)
     _, created = modelclass.update_or_create(
         constraint_field1=orm_model.constraint_field1,
         constraint_field2=orm_model.constraint_field2,
