@@ -38,7 +38,7 @@ def use_update_or_create(modelclass, some_object):
 
 ## What happened?
 
-We got unexpected `django.db.utils.IntegrityError: UNIQUE constraint failed:`, then did a research and made some experimens.
+We got unexpected `django.db.utils.IntegrityError: UNIQUE constraint failed:`, then did a research.
 
 Here is an example of using `update_or_create` without database constraint:
 
@@ -59,15 +59,14 @@ So, `created=False` but `MyModel.objects.count() = 2`, and new object was actual
 
 ## Why it happened?
 
-1. `django.forms.models.model_to_dict` returns a dictionary from ORM-object.
-Actually, in our case, it returns:
+1. `django.forms.models.model_to_dict` in our case returns:
 
 ```python
 >>> model_to_dict(orm_object)
 {'id': None, 'source': 'test_0', 'source_message_id': 'existed', 'text': 'once told me'}
 ```
 
-2. Here is a source code of `update_or_create`:
+2. A source code of `django.db.models.query.update_or_create`:
 
 ```python
     def update_or_create(self, defaults=None, **kwargs):
@@ -101,13 +100,9 @@ So, field `id` is overridden with `None`, and when it goes `obj.save()`, then `o
 
 We understand that an issue took it's place because of our unknowing of how this functions work inside. But we souldn't know it!
 
-The magic of autoincrements fields easily can deliver unexpected behavior and sould be carefully explained in documentation.
+The magic of autoincrement fields easily can deliver an unexpected behavior and sould be carefully explained in documentation.
 Or protected from the inside:
 - check if field is auto incremented 
 - and is it setted to a None-value, 
 - and if it is, make a warning
 That could be a satisfying solution.
-
-Then it goes like this:
-```python
-```
